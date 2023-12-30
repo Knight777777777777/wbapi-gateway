@@ -1,0 +1,29 @@
+server:
+  port: 8090
+
+spring:
+  cloud:
+    gateway:
+      default-filters:
+        - AddResponseHeader=source, waterbird
+      routes:
+#匹配以“/api/”开头的路径，并且转发到"http://localhost:8123"
+        - id: api_route
+          uri: http://localhost:8123
+          predicates:
+            - Path=/api/**
+#          filters:
+#            - AddRequestHeader=lcc, sb
+#            - AddRequestParameter=name, sb
+#            - AddResponseHeader=lcc, sb
+#        - id: wbapi-fallback
+#          uri: https://yupi.icu
+#          predicates:
+#            - Path=/fallback
+logging:
+  level:
+    org:
+      springframework:
+        cloud:
+          gateway: trace
+          #trace级别会产生大量日志，生产环境应该关闭
