@@ -1,8 +1,8 @@
 package com.waterbird.wbapigateway;
 
+
 import com.waterbird.wbapisdk.utils.SignUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.client.methods.HttpHead;
 import org.reactivestreams.Publisher;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
@@ -31,7 +31,7 @@ import java.util.List;
 @Slf4j
 @Component
 public class CustomGlobalFilter implements GlobalFilter, Ordered {
-    private static final List<String> IP_WHITE_LIST = Arrays.asList("127.0.0.1", "localhost");
+    private static final List<String> IP_WHITE_LIST = Arrays.asList("127.0.0.1");
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
