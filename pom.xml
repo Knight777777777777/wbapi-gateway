@@ -55,6 +55,11 @@
             <artifactId>wb-api-sdk</artifactId>
             <version>0.0.2</version>
         </dependency>
+        <dependency>
+            <groupId>com.waterbird</groupId>
+            <artifactId>wbapi-common</artifactId>
+            <version>0.0.2</version>
+        </dependency>
     </dependencies>
     <dependencyManagement>
         <dependencies>

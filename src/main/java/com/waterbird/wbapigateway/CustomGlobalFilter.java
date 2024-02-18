@@ -1,8 +1,17 @@
 package com.waterbird.wbapigateway;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.waterbird.wbapicommon.model.entity.InterfaceInfo;
+import com.waterbird.wbapicommon.model.entity.User;
+import com.waterbird.wbapicommon.model.entity.UserInterfaceInfo;
+import com.waterbird.wbapicommon.service.InnerInterfaceInfoService;
+import com.waterbird.wbapicommon.service.InnerUserInterfaceInfoService;
+import com.waterbird.wbapicommon.service.InnerUserService;
 import com.waterbird.wbapisdk.utils.SignUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.dubbo.config.annotation.DubboReference;
+import org.apache.dubbo.config.annotation.DubboService;
 import org.reactivestreams.Publisher;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
@@ -20,6 +29,7 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import javax.annotation.Resource;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,25 +41,38 @@ import java.util.List;
 @Slf4j
 @Component
 public class CustomGlobalFilter implements GlobalFilter, Ordered {
+    @DubboReference
+    private InnerUserService innerUserService;
+
+    @DubboReference
+    private InnerInterfaceInfoService innerInterfaceInfoService;
+
+    @DubboReference
+    private InnerUserInterfaceInfoService innerUserInterfaceInfoService;
+
+
     private static final List<String> IP_WHITE_LIST = Arrays.asList("127.0.0.1");
 
+    private static final String INTERFACE_HOST = "http://localhost:8123";
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        //请求日志
+        //1请求日志
         ServerHttpRequest request = exchange.getRequest();
+        String path = INTERFACE_HOST + request.getPath().value();
+        String method = request.getMethod().toString();
         log.info("请求唯一标识：" + request.getId());
-        log.info("请求路径：" + request.getPath().value());
-        log.info("请求方法：" + request.getMethod());
+        log.info("请求路径：" + path);
+        log.info("请求方法：" + method);
         log.info("请求参数：" + request.getQueryParams());
         String sourceAddress = request.getLocalAddress().getHostString();
         log.info("请求来源地址：" + sourceAddress);
         log.info("请求来源地址：" + request.getRemoteAddress());
         ServerHttpResponse response = exchange.getResponse();
-        //访问控制 -黑白名单
+        //2访问控制 -黑白名单
         if (!IP_WHITE_LIST.contains(sourceAddress)) {
             return handleNoAuth(response);
         }
-        // 用户鉴权（判断 ak、sk 是否合法）
+        //3 用户鉴权（判断 ak、sk 是否合法）
         // 从请求头中获取参数
         HttpHeaders httpHeaders = request.getHeaders();
         String accessKey = httpHeaders.getFirst("accessKey");
@@ -57,11 +80,20 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
         String timestamp = httpHeaders.getFirst("timestamp");
         String sign = httpHeaders.getFirst("sign");
         String body = httpHeaders.getFirst("body");
-
-        // todo 实际情况应该是去数据库中查是否已分配给用户
-        if (accessKey == null || !accessKey.equals("waterbird")) {
+        // 查询用户是否存在
+        User invokeUser = null;
+        try{
+            invokeUser = innerUserService.getInvokeUser(accessKey);
+        }catch(Exception e){
+            log.error("getInvokeUser error",e);
+        }
+        if(invokeUser == null){
             return handleNoAuth(response);
         }
+
+//        if (accessKey == null || !accessKey.equals("waterbird")) {
+//            return handleNoAuth(response);
+//        }
         // 直接校验如果随机数大于1万，则抛出异常，并提示"无权限"
         if (Long.parseLong(nonce) > 100000) {
             return handleNoAuth(response);
@@ -74,17 +106,39 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
             return handleNoAuth(response);
         }
 
-        // todo 实际情况中是从数据库中查出 secretKey
-        String serverSign = SignUtils.genSign(body, "waterbird");
+        // 从数据库中查出 secretKey
+        String secrectKey = invokeUser.getSecretKey();
+        String serverSign = SignUtils.genSign(body, secrectKey);
         if (sign == null || !sign.equals(serverSign)) {
             return handleNoAuth(response);
         }
         // 请求的模拟接口是否存在？
-        // todo 从数据库中查询模拟接口是否存在，以及请求方法是否匹配（以及校验请求参数）这里尽量调用可以操作数据库的项目提供的接口
+        //  从数据库中查询模拟接口是否存在，以及请求方法是否匹配（以及校验请求参数）这里尽量调用可以操作数据库的项目提供的接口
+        InterfaceInfo interfaceInfo = null;
+        try {
+            interfaceInfo = innerInterfaceInfoService.getInterfaceInfo(path, method);
+        }catch (Exception e){
+            log.error("getInterfaceInfo error",e);
+        }
+        if(interfaceInfo == null){
+            return handleNoAuth(response);
+        }
+        // 是否还有调用次数
+        UserInterfaceInfo userInterfaceInfo = null;
+        try {
+            userInterfaceInfo = innerUserInterfaceInfoService.getUserInterfaceInfo(interfaceInfo.getId(), invokeUser.getId());
+        }catch (Exception e){
+            log.error("getUserInterfaceInfo error",e);
+        }
+        if(userInterfaceInfo == null){
+            return handleNoAuth(response);
+        }
+
+
         //请求转发，调用模拟接口
-        Mono<Void> filter = chain.filter(exchange);
+//        Mono<Void> filter = chain.filter(exchange);
         //响应日志
-        return handleResponse(exchange, chain);
+        return handleResponse(exchange, chain, interfaceInfo.getId(),invokeUser.getId());
 
 //        return filter;
     }
@@ -111,7 +165,7 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
      * @param chain
      * @return
      */
-    public Mono<Void> handleResponse(ServerWebExchange exchange, GatewayFilterChain chain) {
+    public Mono<Void> handleResponse(ServerWebExchange exchange, GatewayFilterChain chain,long interfaceInfoId,long userId){
         try {
             // 获取原始的响应对象
             ServerHttpResponse originalResponse = exchange.getResponse();
@@ -137,7 +191,12 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
                             // 返回一个处理后的响应体
                             // (这里就理解为它在拼接字符串,它把缓冲区的数据取出来，一点一点拼接好)
                             return super.writeWith(fluxBody.map(dataBuffer -> {
-                                // todo 调用成功，接口调用次数 + 1 InvokeCount
+                                // 调用成功，接口调用次数 + 1 InvokeCount
+                                try {
+                                    innerUserInterfaceInfoService.invokeCount(interfaceInfoId,userId);
+                                }catch (Exception e){
+                                    log.error("invokeCount error",e);
+                                }
                                 // 读取响应体的内容并转换为字节数组
                                 byte[] content = new byte[dataBuffer.readableByteCount()];
                                 dataBuffer.read(content);
