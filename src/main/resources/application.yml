@@ -11,15 +11,15 @@ spring:
           uri: http://localhost:8123
           predicates:
             - Path=/api/**
-          filters:
-            - name: CircuitBreaker
-              args:
-                name: myCircuitBreaker
-                fallbackUri: forward:/fallback
-        - id: wbapi-fallback
-          uri: https://github.com/Knight777777777777/wbapi-backend
-          predicates:
-            - Path=/fallback
+#          filters:
+#            - name: CircuitBreaker # 降级 但会被 Spring Boot 冲掉
+#              args:
+#                name: myCircuitBreaker
+#                fallbackUri: forward:/fallback
+#        - id: wbapi-fallback
+#          uri: https://github.com/Knight777777777777/wbapi-backend
+#          predicates:
+#            - Path=/fallback
 logging:
   level:
     org:

@@ -80,6 +80,7 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
         String timestamp = httpHeaders.getFirst("timestamp");
         String sign = httpHeaders.getFirst("sign");
         String body = httpHeaders.getFirst("body");
+        body = new String(body.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
         // 查询用户是否存在
         User invokeUser = null;
         try{
@@ -133,13 +134,10 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
         if(userInterfaceInfo == null){
             return handleNoAuth(response);
         }
-
-
         //请求转发，调用模拟接口
 //        Mono<Void> filter = chain.filter(exchange);
         //响应日志
         return handleResponse(exchange, chain, interfaceInfo.getId(),invokeUser.getId());
-
 //        return filter;
     }
 
