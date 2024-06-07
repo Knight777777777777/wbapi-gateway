@@ -1,14 +1,23 @@
 server:
   port: 8090
+  servlet:
+    # cookie 30 天过期
+    session:
+      cookie:
+        max-age: 2592000
 spring:
+  application:
+    name: wbapi-gateway
   cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
     gateway:
       default-filters:
         - AddResponseHeader=source, waterbird
       routes:
-#匹配以“/api/”开头的路径，并且转发到"http://localhost:8123"
         - id: api_route
-          uri: http://localhost:8123
+          uri: lb://wbapi-backend
           predicates:
             - Path=/api/**
 #          filters:
@@ -35,6 +44,9 @@ dubbo:
   # 指定使用 Dubbo 协议，且端口设置为 -1，表示随机分配可用端口
   protocol:
     name: dubbo
+    qosEnableL: true
+    qosPort: 33333
+    qosAcceptForeignIp: false
     port: 22223
   registry:
     # 配置注册中心为 Nacos，使用的地址是 nacos://localhost:8848

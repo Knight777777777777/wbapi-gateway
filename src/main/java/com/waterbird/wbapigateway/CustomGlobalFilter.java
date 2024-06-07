@@ -1,7 +1,8 @@
 package com.waterbird.wbapigateway;
 
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import cn.hutool.core.util.NumberUtil;
+import cn.hutool.core.util.StrUtil;
 import com.waterbird.wbapicommon.model.entity.InterfaceInfo;
 import com.waterbird.wbapicommon.model.entity.User;
 import com.waterbird.wbapicommon.model.entity.UserInterfaceInfo;
@@ -11,7 +12,6 @@ import com.waterbird.wbapicommon.service.InnerUserService;
 import com.waterbird.wbapisdk.utils.SignUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboReference;
-import org.apache.dubbo.config.annotation.DubboService;
 import org.reactivestreams.Publisher;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
@@ -29,11 +29,13 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import javax.annotation.Resource;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 全局过滤
@@ -53,94 +55,100 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
 
     private static final List<String> IP_WHITE_LIST = Arrays.asList("127.0.0.1");
 
-    private static final String INTERFACE_HOST = "http://localhost:8123";
+
+    private static final long FIVE_MINUTES = 5 * 60 * 1000L;
+
+    private static final String INTERFACE_HOST = "http://localhost:8090";
+
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         //1请求日志
         ServerHttpRequest request = exchange.getRequest();
         String path = INTERFACE_HOST + request.getPath().value();
-        String method = request.getMethod().toString();
-        log.info("请求唯一标识：" + request.getId());
+        // 多了空指针检查，明确了 request.getMethod()不能为空，增加了代码的健壮性和可维护性。
+        String method = Objects.requireNonNull(request.getMethod()).toString();
+        log.info("请求id：" + request.getId());
         log.info("请求路径：" + path);
         log.info("请求方法：" + method);
         log.info("请求参数：" + request.getQueryParams());
         String sourceAddress = request.getLocalAddress().getHostString();
         log.info("请求来源地址：" + sourceAddress);
-        log.info("请求来源地址：" + request.getRemoteAddress());
-        ServerHttpResponse response = exchange.getResponse();
+        String remoteAddress = Objects.requireNonNull(request.getRemoteAddress()).getHostString();
+        log.info("请求地址: {}", remoteAddress);
+
         //2访问控制 -黑白名单
+        ServerHttpResponse response = exchange.getResponse();
         if (!IP_WHITE_LIST.contains(sourceAddress)) {
             return handleNoAuth(response);
         }
+
         //3 用户鉴权（判断 ak、sk 是否合法）
-        // 从请求头中获取参数
         HttpHeaders httpHeaders = request.getHeaders();
         String accessKey = httpHeaders.getFirst("accessKey");
+        // 防止中文乱码
+        String body = null;
+        try {
+            body = URLDecoder.decode(Objects.requireNonNull(httpHeaders.getFirst("body")), StandardCharsets.UTF_8.name());
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
         String nonce = httpHeaders.getFirst("nonce");
         String timestamp = httpHeaders.getFirst("timestamp");
         String sign = httpHeaders.getFirst("sign");
-        String body = httpHeaders.getFirst("body");
+        boolean hasBlank = StrUtil.hasBlank(accessKey, body, sign, nonce, timestamp);
+        // 判断是否有空
+        if (hasBlank) {
+            return handleInvokeError(response);
+        }
         // 查询用户是否存在
         User invokeUser = null;
-        try{
+        try {
             invokeUser = innerUserService.getInvokeUser(accessKey);
-        }catch(Exception e){
-            log.error("getInvokeUser error",e);
+        } catch (Exception e) {
+            log.error("getInvokeUser error", e);
         }
-        if(invokeUser == null){
+        if (invokeUser == null) {
             return handleNoAuth(response);
         }
+        // 从数据库中查出 secretKey
+        String secrectKey = invokeUser.getSecretKey();
+        String serverSign = SignUtils.genSign(body, secrectKey);
+        if (sign == null || !StrUtil.equals(sign, serverSign)) {
+            return handleInvokeError(response);
+        }
 
-//        if (accessKey == null || !accessKey.equals("waterbird")) {
-//            return handleNoAuth(response);
-//        }
         // 直接校验如果随机数大于1万，则抛出异常，并提示"无权限"
         if (Long.parseLong(nonce) > 100000) {
             return handleNoAuth(response);
         }
-
+        // 时间戳是否为数字
+        if (!NumberUtil.isNumber(timestamp)) {
+            return handleInvokeError(response);
+        }
         // 时间和当前时间不能超过5分钟
-        Long currentTimeMillis = System.currentTimeMillis() / 1000;
-        final Long FIVE_MINUTES = 5 * 60L;
-        if ((currentTimeMillis - Long.parseLong(timestamp)) >= FIVE_MINUTES) {
-            return handleNoAuth(response);
+        if (System.currentTimeMillis() - Long.parseLong(timestamp) >= FIVE_MINUTES) {
+            return handleInvokeError(response);
         }
 
-        // 从数据库中查出 secretKey
-        String secrectKey = invokeUser.getSecretKey();
-        String serverSign = SignUtils.genSign(body, secrectKey);
-        if (sign == null || !sign.equals(serverSign)) {
-            return handleNoAuth(response);
-        }
+
         // 请求的模拟接口是否存在？
         //  从数据库中查询模拟接口是否存在，以及请求方法是否匹配（以及校验请求参数）这里尽量调用可以操作数据库的项目提供的接口
-        InterfaceInfo interfaceInfo = null;
+        InterfaceInfo invokeInterfaceInfo = null;
         try {
-            interfaceInfo = innerInterfaceInfoService.getInterfaceInfo(path, method);
-        }catch (Exception e){
-            log.error("getInterfaceInfo error",e);
+            invokeInterfaceInfo = innerInterfaceInfoService.getInvokeInterfaceInfo(path, method);
+        } catch (Exception e) {
+            log.error("getInterfaceInfo error", e);
         }
-        if(interfaceInfo == null){
-            return handleNoAuth(response);
+        if (invokeInterfaceInfo == null) {
+            return handleInvokeError(response);
         }
-        // 是否还有调用次数
-        UserInterfaceInfo userInterfaceInfo = null;
-        try {
-            userInterfaceInfo = innerUserInterfaceInfoService.getUserInterfaceInfo(interfaceInfo.getId(), invokeUser.getId());
-        }catch (Exception e){
-            log.error("getUserInterfaceInfo error",e);
+        //  是否有调用次数
+        if (!innerUserInterfaceInfoService.hasInvokeNum(invokeUser.getId(), invokeInterfaceInfo.getId())) {
+            return handleInvokeError(response);
         }
-        if(userInterfaceInfo == null){
-            return handleNoAuth(response);
-        }
-
 
         //请求转发，调用模拟接口
-//        Mono<Void> filter = chain.filter(exchange);
-        //响应日志
-        return handleResponse(exchange, chain, interfaceInfo.getId(),invokeUser.getId());
-
-//        return filter;
+        return handleResponse(exchange, chain, invokeInterfaceInfo.getId(), invokeUser.getId());
     }
 
     @Override
@@ -165,7 +173,7 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
      * @param chain
      * @return
      */
-    public Mono<Void> handleResponse(ServerWebExchange exchange, GatewayFilterChain chain,long interfaceInfoId,long userId){
+    public Mono<Void> handleResponse(ServerWebExchange exchange, GatewayFilterChain chain, long interfaceInfoId, long userId) {
         try {
             // 获取原始的响应对象
             ServerHttpResponse originalResponse = exchange.getResponse();
@@ -193,9 +201,9 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
                             return super.writeWith(fluxBody.map(dataBuffer -> {
                                 // 调用成功，接口调用次数 + 1 InvokeCount
                                 try {
-                                    innerUserInterfaceInfoService.invokeCount(interfaceInfoId,userId);
-                                }catch (Exception e){
-                                    log.error("invokeCount error",e);
+                                    innerUserInterfaceInfoService.invokeCount(interfaceInfoId, userId);
+                                } catch (Exception e) {
+                                    log.error("invokeCount error", e);
                                 }
                                 // 读取响应体的内容并转换为字节数组
                                 byte[] content = new byte[dataBuffer.readableByteCount()];
@@ -210,7 +218,6 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
                                 sb2.append(data);
                                 log.info(sb2.toString(), rspArgs.toArray());
                                 log.info("响应结果：" + data);
-                                //log.info("<-- {} {}\n", originalResponse.getStatusCode(), data);
                                 // 将处理后的内容重新包装成DataBuffer并返回
                                 return bufferFactory.wrap(content);
                             }));

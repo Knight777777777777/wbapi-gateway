@@ -40,14 +40,4 @@ public class WbapiGatewayApplication {
         return demoService.sayHello2(name);
     }
 
-//    @Bean
-//    public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
-//        return builder.routes()
-//                .route("tobaidu", r -> r.path("/baidu")
-//                        .uri("https://www.baidu.com"))
-//                .route("toWbpiicu", r -> r.path("/Wbpiicu")
-//                        .uri("http://Wbpi.icu"))
-//                .build();
-//    }
-
 }
