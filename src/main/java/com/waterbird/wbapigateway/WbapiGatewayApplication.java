@@ -1,14 +1,11 @@
 package com.waterbird.wbapigateway;
 
-import com.waterbird.wbapi.provider.DemoService;
-import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.dubbo.config.spring.context.annotation.EnableDubbo;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Service;
 
 @SpringBootApplication(exclude = {
@@ -19,25 +16,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class WbapiGatewayApplication {
 
-    @DubboReference
-    private DemoService demoService;
-
     public static void main(String[] args) {
-
-        ConfigurableApplicationContext context = SpringApplication.run(WbapiGatewayApplication.class, args);
-        WbapiGatewayApplication application = context.getBean(WbapiGatewayApplication.class);
-        String result = application.doSayHello("world");
-        String result2 = application.doSayHello2("world");
-        System.out.println("result: " + result);
-        System.out.println("result: " + result2);
+        //将dubbo缓存的绝对目录改成相对目录，避免后续项目上线出现问题 已实现
+        String rootPath = System.getProperty("user.dir");
+        String subDirectory = "gatewayDubboCache";
+        String fullPath = rootPath + "/" + subDirectory;
+        System.setProperty("user.home", fullPath);
+        SpringApplication.run(WbapiGatewayApplication.class, args);
     }
-
-    public String doSayHello(String name) {
-        return demoService.sayHello(name);
-    }
-
-    public String doSayHello2(String name) {
-        return demoService.sayHello2(name);
-    }
-
 }
