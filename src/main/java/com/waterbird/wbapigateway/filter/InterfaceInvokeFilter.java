@@ -5,13 +5,13 @@ import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.StrUtil;
 import com.waterbird.wbapicommon.entity.InterfaceInfo;
 import com.waterbird.wbapicommon.entity.User;
-import com.waterbird.wbapicommon.service.InnerInterfaceInfoService;
-import com.waterbird.wbapicommon.service.InnerUserInterfaceInfoService;
-import com.waterbird.wbapicommon.service.InnerUserService;
+import com.waterbird.wbapicommon.service.ApiBackendService;
+import com.waterbird.wbapicommon.vo.UserInterfaceInfoMessage;
 import com.waterbird.wbapisdk.utils.SignUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.reactivestreams.Publisher;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.core.Ordered;
@@ -34,11 +34,13 @@ import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+
+import static com.waterbird.wbapicommon.constant.RabbitmqConstant.EXCHANGE_INTERFACE_CONSISTENT;
+import static com.waterbird.wbapicommon.constant.RabbitmqConstant.ROUTING_KEY_INTERFACE_CONSISTENT;
 
 /**
  * 全局过滤
@@ -50,17 +52,11 @@ public class InterfaceInvokeFilter implements GatewayFilter, Ordered {
     @DubboReference
     private ApiBackendService apiBackendService;
 
-    @DubboReference
-    private InnerUserService innerUserService;
-
-    @DubboReference
-    private InnerInterfaceInfoService innerInterfaceInfoService;
-
-    @DubboReference
-    private InnerUserInterfaceInfoService innerUserInterfaceInfoService;
-
     @Resource
     private StringRedisTemplate stringRedisTemplate;
+
+    @Resource
+    private RabbitTemplate rabbitTemplate;
 
 
     private static final List<String> IP_WHITE_LIST = Arrays.asList("127.0.0.1");
@@ -82,12 +78,12 @@ public class InterfaceInvokeFilter implements GatewayFilter, Ordered {
         String method = Objects.requireNonNull(request.getMethod()).toString();
 
         log.info("请求id：" + request.getId());
-        log.info("请求URI："+request.getURI());
-        log.info("请求PATH:"+request.getPath());
+        log.info("请求URI：" + request.getURI());
+        log.info("请求PATH:" + request.getPath());
         log.info("请求方法：" + method);
         log.info("请求参数：" + request.getQueryParams());
         InetSocketAddress sourceAddress = request.getLocalAddress();
-        log.info("本地请求地址:"+request.getLocalAddress());
+        log.info("本地请求地址:" + request.getLocalAddress());
         String remoteAddress = Objects.requireNonNull(request.getRemoteAddress()).getHostString();
         log.info("请求地址：", remoteAddress);
 
@@ -118,7 +114,7 @@ public class InterfaceInvokeFilter implements GatewayFilter, Ordered {
         // 查询用户是否存在
         User invokeUser = null;
         try {
-            invokeUser = innerUserService.getInvokeUser(accessKey);
+            invokeUser = apiBackendService.getInvokeUser(accessKey);
         } catch (Exception e) {
             log.error("getInvokeUser error", e);
         }
@@ -138,7 +134,7 @@ public class InterfaceInvokeFilter implements GatewayFilter, Ordered {
         //3.1防重放，使用redis存储请求的唯一标识，随机时间，并定时淘汰，那使用什么redis结构来实现嗯？
         //既然是单个数据，这样用string结构实现即可
         Boolean success = stringRedisTemplate.opsForValue().setIfAbsent(nonce, "1", 5, TimeUnit.MINUTES);
-        if (success ==null){
+        if (success == null) {
             log.error("随机数存储失败!!!!");
             return handleNoAuth(response);
         }
@@ -154,25 +150,36 @@ public class InterfaceInvokeFilter implements GatewayFilter, Ordered {
         // 远程调用请求的模拟接口是否存在？以及获取调用接口信息
         InterfaceInfo invokeInterfaceInfo = null;
         try {
-            invokeInterfaceInfo = innerInterfaceInfoService.getInvokeInterfaceInfo(path, method);
+            invokeInterfaceInfo = apiBackendService.getInterFaceInfo(path, method);
         } catch (Exception e) {
-            log.error("getInterfaceInfo error", e);
+            log.error("远程调用获取被调用接口信息失败", e);
+            e.printStackTrace();
         }
         if (invokeInterfaceInfo == null) {
-            return handleInvokeError(response);
-        }
-        //  是否有调用次数
-        if (!innerUserInterfaceInfoService.hasInvokeNum(invokeUser.getId(), invokeInterfaceInfo.getId())) {
-            return handleInvokeError(response);
+            log.error("接口不存在！！！！");
+            return handleNoAuth(response);
         }
 
-        //请求转发，调用模拟接口
+
+        //5.判断接口是否还有调用次数，并且统计接口调用，将二者转化成原子性操作(backend本地服务的本地事务实现)，解决二者数据一致性问题
+        boolean result = false;
+        try {
+            result = apiBackendService.invokeCount(invokeUser.getId(), invokeInterfaceInfo.getId());
+        } catch (Exception e) {
+            log.error("统计接口出现问题或者用户恶意调用不存在的接口");
+            e.printStackTrace();
+            response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
+            return response.setComplete();
+        }
+
+        if (!result) {
+            log.error("接口剩余次数不足");
+            return handleNoAuth(response);
+        }
+
+        //请求转发，调用模拟接，网关路由实现
+        Mono<Void> filter = chain.filter(exchange);
         return handleResponse(exchange, chain, invokeInterfaceInfo.getId(), invokeUser.getId());
-    }
-
-    @Override
-    public int getOrder() {
-        return -1;
     }
 
     public Mono<Void> handleNoAuth(ServerHttpResponse response) {
@@ -196,6 +203,7 @@ public class InterfaceInvokeFilter implements GatewayFilter, Ordered {
         try {
             // 获取原始的响应对象
             ServerHttpResponse originalResponse = exchange.getResponse();
+
             // 获取数据缓冲工厂
             DataBufferFactory bufferFactory = originalResponse.bufferFactory();
             // 获取响应的状态码
@@ -207,8 +215,6 @@ public class InterfaceInvokeFilter implements GatewayFilter, Ordered {
                 ServerHttpResponseDecorator decoratedResponse = new ServerHttpResponseDecorator(originalResponse) {
 
                     // 重写writeWith方法，用于处理响应体的数据
-                    // 这段方法就是只要当我们的模拟接口调用完成之后,等它返回结果，
-                    // 就会调用writeWith方法,我们就能根据响应结果做一些自己的处理
                     @Override
                     public Mono<Void> writeWith(Publisher<? extends DataBuffer> body) {
                         log.info("body instanceof Flux: {}", (body instanceof Flux));
@@ -218,26 +224,23 @@ public class InterfaceInvokeFilter implements GatewayFilter, Ordered {
                             // 返回一个处理后的响应体
                             // (这里就理解为它在拼接字符串,它把缓冲区的数据取出来，一点一点拼接好)
                             return super.writeWith(fluxBody.map(dataBuffer -> {
-                                // 调用成功，接口调用次数 + 1 InvokeCount
-                                try {
-                                    innerUserInterfaceInfoService.invokeCount(interfaceInfoId, userId);
-                                } catch (Exception e) {
-                                    log.error("invokeCount error", e);
-                                }
                                 // 读取响应体的内容并转换为字节数组
                                 byte[] content = new byte[dataBuffer.readableByteCount()];
                                 dataBuffer.read(content);
                                 DataBufferUtils.release(dataBuffer);//释放掉内存
+
+
                                 // 构建日志
-                                StringBuilder sb2 = new StringBuilder(200);
-                                List<Object> rspArgs = new ArrayList<>();
-                                rspArgs.add(originalResponse.getStatusCode());
-                                //rspArgs.add(requestUrl);
-                                String data = new String(content, StandardCharsets.UTF_8);//data
-                                sb2.append(data);
-                                log.info(sb2.toString(), rspArgs.toArray());
-                                log.info("响应结果：" + data);
-                                // 将处理后的内容重新包装成DataBuffer并返回
+                                log.info("接口调用响应状态码：" + originalResponse.getStatusCode());
+                                //responseBody
+                                String responseBody = new String(content, StandardCharsets.UTF_8);
+
+                                //8.接口调用失败，利用消息队列实现接口统计数据的回滚；因为消息队列的可靠性所以我们选择消息队列而不是远程调用来实现
+                                if (!(originalResponse.getStatusCode() == HttpStatus.OK)) {
+                                    log.error("接口异常调用-响应体:" + responseBody);
+                                    UserInterfaceInfoMessage vo = new UserInterfaceInfoMessage(userId, interfaceInfoId);
+                                    rabbitTemplate.convertAndSend(EXCHANGE_INTERFACE_CONSISTENT, ROUTING_KEY_INTERFACE_CONSISTENT, vo);
+                                }
                                 return bufferFactory.wrap(content);
                             }));
                         } else {
@@ -256,5 +259,10 @@ public class InterfaceInvokeFilter implements GatewayFilter, Ordered {
             log.error("网关处理异常.\n" + e);
             return chain.filter(exchange);
         }
+    }
+
+    @Override
+    public int getOrder() {
+        return -2;
     }
 }

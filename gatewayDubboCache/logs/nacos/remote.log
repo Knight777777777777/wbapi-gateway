@@ -312,3 +312,83 @@
 2024-06-09 19:41:47.516 INFO [grpc-nio-worker-ELG-1-2:c.a.n.s.i.g.i.AbstractClientStream] Received trailers on closed stream:
  Metadata(content-type=application/grpc)
  {2}
+2024-06-10 04:03:44.697 INFO [restartedMain:c.a.n.c.r.client] [RpcClientFactory] create a new rpc client of ae6efa90-c5b2-4fe6-b486-3e8fb406eacd_config-0
+2024-06-10 04:03:44.749 INFO [restartedMain:c.a.n.c.r.client] [ae6efa90-c5b2-4fe6-b486-3e8fb406eacd_config-0] RpcClient init label, labels = {module=config, Vipserver-Tag=null, source=sdk, Amory-Tag=null, Location-Tag=null, taskId=0, AppName=unknown}
+2024-06-10 04:03:44.750 INFO [restartedMain:c.a.n.c.r.client] [ae6efa90-c5b2-4fe6-b486-3e8fb406eacd_config-0] Register server push request handler:com.alibaba.nacos.client.config.impl.ClientWorker$ConfigRpcTransportClient$$Lambda$721/0x00000284ce58ed60
+2024-06-10 04:03:44.750 INFO [restartedMain:c.a.n.c.r.client] [ae6efa90-c5b2-4fe6-b486-3e8fb406eacd_config-0] Register server push request handler:com.alibaba.nacos.client.config.impl.ClientWorker$ConfigRpcTransportClient$$Lambda$722/0x00000284ce58ef80
+2024-06-10 04:03:44.750 INFO [restartedMain:c.a.n.c.r.client] [ae6efa90-c5b2-4fe6-b486-3e8fb406eacd_config-0] Registry connection listener to current client:com.alibaba.nacos.client.config.impl.ClientWorker$ConfigRpcTransportClient$1
+2024-06-10 04:03:44.751 INFO [restartedMain:c.a.n.c.r.client] [ae6efa90-c5b2-4fe6-b486-3e8fb406eacd_config-0] RpcClient init, ServerListFactory = com.alibaba.nacos.client.config.impl.ClientWorker$ConfigRpcTransportClient$2
+2024-06-10 04:03:44.758 INFO [restartedMain:c.a.n.c.r.client] [ae6efa90-c5b2-4fe6-b486-3e8fb406eacd_config-0] Try to connect to server on start up, server: {serverIp = 'localhost', server main port = 8848}
+2024-06-10 04:03:45.664 INFO [restartedMain:c.a.n.c.r.client] [ae6efa90-c5b2-4fe6-b486-3e8fb406eacd_config-0] Success to connect to server [localhost:8848] on start up, connectionId = 1717963425484_127.0.0.1_61241
+2024-06-10 04:03:45.664 INFO [com.alibaba.nacos.client.remote.worker:c.a.n.c.r.client] [ae6efa90-c5b2-4fe6-b486-3e8fb406eacd_config-0] Notify connected event to listeners.
+2024-06-10 04:03:45.665 INFO [restartedMain:c.a.n.c.r.client] [ae6efa90-c5b2-4fe6-b486-3e8fb406eacd_config-0] Register server push request handler:com.alibaba.nacos.common.remote.client.RpcClient$ConnectResetRequestHandler
+2024-06-10 04:03:45.665 INFO [restartedMain:c.a.n.c.r.client] [ae6efa90-c5b2-4fe6-b486-3e8fb406eacd_config-0] Register server push request handler:com.alibaba.nacos.common.remote.client.RpcClient$$Lambda$737/0x00000284ce6c8000
+2024-06-10 04:08:17.987 INFO [restartedMain:c.a.n.c.r.client] [RpcClientFactory] create a new rpc client of 9be301cb-72e2-45a1-ae11-7c5e476eb9c0_config-0
+2024-06-10 04:08:18.036 INFO [restartedMain:c.a.n.c.r.client] [9be301cb-72e2-45a1-ae11-7c5e476eb9c0_config-0] RpcClient init label, labels = {module=config, Vipserver-Tag=null, source=sdk, Amory-Tag=null, Location-Tag=null, taskId=0, AppName=unknown}
+2024-06-10 04:08:18.037 INFO [restartedMain:c.a.n.c.r.client] [9be301cb-72e2-45a1-ae11-7c5e476eb9c0_config-0] Register server push request handler:com.alibaba.nacos.client.config.impl.ClientWorker$ConfigRpcTransportClient$$Lambda$722/0x000002d2d85908c8
+2024-06-10 04:08:18.037 INFO [restartedMain:c.a.n.c.r.client] [9be301cb-72e2-45a1-ae11-7c5e476eb9c0_config-0] Register server push request handler:com.alibaba.nacos.client.config.impl.ClientWorker$ConfigRpcTransportClient$$Lambda$723/0x000002d2d8590ae8
+2024-06-10 04:08:18.038 INFO [restartedMain:c.a.n.c.r.client] [9be301cb-72e2-45a1-ae11-7c5e476eb9c0_config-0] Registry connection listener to current client:com.alibaba.nacos.client.config.impl.ClientWorker$ConfigRpcTransportClient$1
+2024-06-10 04:08:18.038 INFO [restartedMain:c.a.n.c.r.client] [9be301cb-72e2-45a1-ae11-7c5e476eb9c0_config-0] RpcClient init, ServerListFactory = com.alibaba.nacos.client.config.impl.ClientWorker$ConfigRpcTransportClient$2
+2024-06-10 04:08:18.046 INFO [restartedMain:c.a.n.c.r.client] [9be301cb-72e2-45a1-ae11-7c5e476eb9c0_config-0] Try to connect to server on start up, server: {serverIp = 'localhost', server main port = 8848}
+2024-06-10 04:08:18.940 INFO [restartedMain:c.a.n.c.r.client] [9be301cb-72e2-45a1-ae11-7c5e476eb9c0_config-0] Success to connect to server [localhost:8848] on start up, connectionId = 1717963698766_127.0.0.1_61936
+2024-06-10 04:08:18.941 INFO [com.alibaba.nacos.client.remote.worker:c.a.n.c.r.client] [9be301cb-72e2-45a1-ae11-7c5e476eb9c0_config-0] Notify connected event to listeners.
+2024-06-10 04:08:18.941 INFO [restartedMain:c.a.n.c.r.client] [9be301cb-72e2-45a1-ae11-7c5e476eb9c0_config-0] Register server push request handler:com.alibaba.nacos.common.remote.client.RpcClient$ConnectResetRequestHandler
+2024-06-10 04:08:18.941 INFO [restartedMain:c.a.n.c.r.client] [9be301cb-72e2-45a1-ae11-7c5e476eb9c0_config-0] Register server push request handler:com.alibaba.nacos.common.remote.client.RpcClient$$Lambda$737/0x000002d2d86c9898
+2024-06-10 04:08:27.832 INFO [restartedMain:c.a.n.c.r.client] [RpcClientFactory] create a new rpc client of 8f7def7f-7a36-4ae1-9851-e668efda3c1e
+2024-06-10 04:08:27.832 INFO [restartedMain:c.a.n.c.r.client] [8f7def7f-7a36-4ae1-9851-e668efda3c1e] RpcClient init label, labels = {module=naming, source=sdk}
+2024-06-10 04:08:27.833 INFO [restartedMain:c.a.n.c.r.client] [8f7def7f-7a36-4ae1-9851-e668efda3c1e] RpcClient init, ServerListFactory = com.alibaba.nacos.client.naming.core.ServerListManager
+2024-06-10 04:08:27.833 INFO [restartedMain:c.a.n.c.r.client] [8f7def7f-7a36-4ae1-9851-e668efda3c1e] Registry connection listener to current client:com.alibaba.nacos.client.naming.remote.gprc.redo.NamingGrpcRedoService
+2024-06-10 04:08:27.833 INFO [restartedMain:c.a.n.c.r.client] [8f7def7f-7a36-4ae1-9851-e668efda3c1e] Register server push request handler:com.alibaba.nacos.client.naming.remote.gprc.NamingPushRequestHandler
+2024-06-10 04:08:27.834 INFO [restartedMain:c.a.n.c.r.client] [8f7def7f-7a36-4ae1-9851-e668efda3c1e] Try to connect to server on start up, server: {serverIp = '127.0.0.1', server main port = 8848}
+2024-06-10 04:08:27.957 INFO [restartedMain:c.a.n.c.r.client] [8f7def7f-7a36-4ae1-9851-e668efda3c1e] Success to connect to server [127.0.0.1:8848] on start up, connectionId = 1717963707839_127.0.0.1_61953
+2024-06-10 04:08:27.957 INFO [restartedMain:c.a.n.c.r.client] [8f7def7f-7a36-4ae1-9851-e668efda3c1e] Register server push request handler:com.alibaba.nacos.common.remote.client.RpcClient$ConnectResetRequestHandler
+2024-06-10 04:08:27.957 INFO [com.alibaba.nacos.client.remote.worker:c.a.n.c.r.client] [8f7def7f-7a36-4ae1-9851-e668efda3c1e] Notify connected event to listeners.
+2024-06-10 04:08:27.957 INFO [restartedMain:c.a.n.c.r.client] [8f7def7f-7a36-4ae1-9851-e668efda3c1e] Register server push request handler:com.alibaba.nacos.common.remote.client.RpcClient$$Lambda$737/0x000002d2d86c9898
+2024-06-10 04:08:28.147 INFO [restartedMain:c.a.n.c.r.client] [RpcClientFactory] create a new rpc client of c4c78015-7695-4c45-85f5-bb683623eb20
+2024-06-10 04:08:28.147 INFO [restartedMain:c.a.n.c.r.client] [c4c78015-7695-4c45-85f5-bb683623eb20] RpcClient init label, labels = {module=naming, source=sdk}
+2024-06-10 04:08:28.147 INFO [restartedMain:c.a.n.c.r.client] [c4c78015-7695-4c45-85f5-bb683623eb20] RpcClient init, ServerListFactory = com.alibaba.nacos.client.naming.core.ServerListManager
+2024-06-10 04:08:28.147 INFO [restartedMain:c.a.n.c.r.client] [c4c78015-7695-4c45-85f5-bb683623eb20] Registry connection listener to current client:com.alibaba.nacos.client.naming.remote.gprc.redo.NamingGrpcRedoService
+2024-06-10 04:08:28.147 INFO [restartedMain:c.a.n.c.r.client] [c4c78015-7695-4c45-85f5-bb683623eb20] Register server push request handler:com.alibaba.nacos.client.naming.remote.gprc.NamingPushRequestHandler
+2024-06-10 04:08:28.148 INFO [restartedMain:c.a.n.c.r.client] [c4c78015-7695-4c45-85f5-bb683623eb20] Try to connect to server on start up, server: {serverIp = 'localhost', server main port = 8848}
+2024-06-10 04:08:28.272 INFO [restartedMain:c.a.n.c.r.client] [c4c78015-7695-4c45-85f5-bb683623eb20] Success to connect to server [localhost:8848] on start up, connectionId = 1717963708153_127.0.0.1_61955
+2024-06-10 04:08:28.272 INFO [restartedMain:c.a.n.c.r.client] [c4c78015-7695-4c45-85f5-bb683623eb20] Register server push request handler:com.alibaba.nacos.common.remote.client.RpcClient$ConnectResetRequestHandler
+2024-06-10 04:08:28.272 INFO [com.alibaba.nacos.client.remote.worker:c.a.n.c.r.client] [c4c78015-7695-4c45-85f5-bb683623eb20] Notify connected event to listeners.
+2024-06-10 04:08:28.272 INFO [restartedMain:c.a.n.c.r.client] [c4c78015-7695-4c45-85f5-bb683623eb20] Register server push request handler:com.alibaba.nacos.common.remote.client.RpcClient$$Lambda$737/0x000002d2d86c9898
+2024-06-10 04:08:28.543 INFO [restartedMain:c.a.n.c.r.client] [RpcClientFactory] create a new rpc client of 195c3137-8137-4586-90b8-1e4785082eb5
+2024-06-10 04:08:28.544 INFO [restartedMain:c.a.n.c.r.client] [195c3137-8137-4586-90b8-1e4785082eb5] RpcClient init label, labels = {module=naming, source=sdk}
+2024-06-10 04:08:28.544 INFO [restartedMain:c.a.n.c.r.client] [195c3137-8137-4586-90b8-1e4785082eb5] RpcClient init, ServerListFactory = com.alibaba.nacos.client.naming.core.ServerListManager
+2024-06-10 04:08:28.544 INFO [restartedMain:c.a.n.c.r.client] [195c3137-8137-4586-90b8-1e4785082eb5] Registry connection listener to current client:com.alibaba.nacos.client.naming.remote.gprc.redo.NamingGrpcRedoService
+2024-06-10 04:08:28.544 INFO [restartedMain:c.a.n.c.r.client] [195c3137-8137-4586-90b8-1e4785082eb5] Register server push request handler:com.alibaba.nacos.client.naming.remote.gprc.NamingPushRequestHandler
+2024-06-10 04:08:28.544 INFO [restartedMain:c.a.n.c.r.client] [195c3137-8137-4586-90b8-1e4785082eb5] Try to connect to server on start up, server: {serverIp = 'localhost', server main port = 8848}
+2024-06-10 04:08:28.664 INFO [restartedMain:c.a.n.c.r.client] [195c3137-8137-4586-90b8-1e4785082eb5] Success to connect to server [localhost:8848] on start up, connectionId = 1717963708550_127.0.0.1_61957
+2024-06-10 04:08:28.664 INFO [restartedMain:c.a.n.c.r.client] [195c3137-8137-4586-90b8-1e4785082eb5] Register server push request handler:com.alibaba.nacos.common.remote.client.RpcClient$ConnectResetRequestHandler
+2024-06-10 04:08:28.664 INFO [com.alibaba.nacos.client.remote.worker:c.a.n.c.r.client] [195c3137-8137-4586-90b8-1e4785082eb5] Notify connected event to listeners.
+2024-06-10 04:08:28.664 INFO [restartedMain:c.a.n.c.r.client] [195c3137-8137-4586-90b8-1e4785082eb5] Register server push request handler:com.alibaba.nacos.common.remote.client.RpcClient$$Lambda$737/0x000002d2d86c9898
+2024-06-10 04:08:28.712 INFO [com.alibaba.nacos.client.Worker:c.a.n.c.r.client] [RpcClientFactory] create a new rpc client of 14a15e0b-fdbb-4ed6-a465-57ed295d0e58_config-0
+2024-06-10 04:08:28.712 INFO [com.alibaba.nacos.client.Worker:c.a.n.c.r.client] [14a15e0b-fdbb-4ed6-a465-57ed295d0e58_config-0] RpcClient init label, labels = {module=config, Vipserver-Tag=null, source=sdk, Amory-Tag=null, Location-Tag=null, taskId=0, AppName=unknown}
+2024-06-10 04:08:28.712 INFO [com.alibaba.nacos.client.Worker:c.a.n.c.r.client] [14a15e0b-fdbb-4ed6-a465-57ed295d0e58_config-0] Register server push request handler:com.alibaba.nacos.client.config.impl.ClientWorker$ConfigRpcTransportClient$$Lambda$722/0x000002d2d85908c8
+2024-06-10 04:08:28.712 INFO [com.alibaba.nacos.client.Worker:c.a.n.c.r.client] [14a15e0b-fdbb-4ed6-a465-57ed295d0e58_config-0] Register server push request handler:com.alibaba.nacos.client.config.impl.ClientWorker$ConfigRpcTransportClient$$Lambda$723/0x000002d2d8590ae8
+2024-06-10 04:08:28.712 INFO [com.alibaba.nacos.client.Worker:c.a.n.c.r.client] [14a15e0b-fdbb-4ed6-a465-57ed295d0e58_config-0] Registry connection listener to current client:com.alibaba.nacos.client.config.impl.ClientWorker$ConfigRpcTransportClient$1
+2024-06-10 04:08:28.712 INFO [com.alibaba.nacos.client.Worker:c.a.n.c.r.client] [14a15e0b-fdbb-4ed6-a465-57ed295d0e58_config-0] RpcClient init, ServerListFactory = com.alibaba.nacos.client.config.impl.ClientWorker$ConfigRpcTransportClient$2
+2024-06-10 04:08:28.713 INFO [com.alibaba.nacos.client.Worker:c.a.n.c.r.client] [14a15e0b-fdbb-4ed6-a465-57ed295d0e58_config-0] Try to connect to server on start up, server: {serverIp = 'localhost', server main port = 8848}
+2024-06-10 04:08:28.828 INFO [com.alibaba.nacos.client.Worker:c.a.n.c.r.client] [14a15e0b-fdbb-4ed6-a465-57ed295d0e58_config-0] Success to connect to server [localhost:8848] on start up, connectionId = 1717963708718_127.0.0.1_61958
+2024-06-10 04:08:28.828 INFO [com.alibaba.nacos.client.Worker:c.a.n.c.r.client] [14a15e0b-fdbb-4ed6-a465-57ed295d0e58_config-0] Register server push request handler:com.alibaba.nacos.common.remote.client.RpcClient$ConnectResetRequestHandler
+2024-06-10 04:08:28.828 INFO [com.alibaba.nacos.client.remote.worker:c.a.n.c.r.client] [14a15e0b-fdbb-4ed6-a465-57ed295d0e58_config-0] Notify connected event to listeners.
+2024-06-10 04:08:28.828 INFO [com.alibaba.nacos.client.Worker:c.a.n.c.r.client] [14a15e0b-fdbb-4ed6-a465-57ed295d0e58_config-0] Register server push request handler:com.alibaba.nacos.common.remote.client.RpcClient$$Lambda$737/0x000002d2d86c9898
+2024-06-10 04:08:28.957 INFO [nacos-grpc-client-executor-localhost-6:c.a.n.c.r.client] [c4c78015-7695-4c45-85f5-bb683623eb20] Receive server push request, request = NotifySubscriberRequest, requestId = 181
+2024-06-10 04:08:28.957 INFO [nacos-grpc-client-executor-localhost-6:c.a.n.c.r.client] [c4c78015-7695-4c45-85f5-bb683623eb20] Ack server push request, request = NotifySubscriberRequest, requestId = 181
+2024-06-10 04:08:28.962 INFO [nacos-grpc-client-executor-localhost-7:c.a.n.c.r.client] [c4c78015-7695-4c45-85f5-bb683623eb20] Receive server push request, request = NotifySubscriberRequest, requestId = 182
+2024-06-10 04:08:28.962 INFO [nacos-grpc-client-executor-localhost-7:c.a.n.c.r.client] [c4c78015-7695-4c45-85f5-bb683623eb20] Ack server push request, request = NotifySubscriberRequest, requestId = 182
+2024-06-10 04:08:29.389 INFO [nacos-grpc-client-executor-localhost-5:c.a.n.c.r.client] [195c3137-8137-4586-90b8-1e4785082eb5] Receive server push request, request = NotifySubscriberRequest, requestId = 183
+2024-06-10 04:08:29.389 INFO [nacos-grpc-client-executor-localhost-5:c.a.n.c.r.client] [195c3137-8137-4586-90b8-1e4785082eb5] Ack server push request, request = NotifySubscriberRequest, requestId = 183
+2024-06-10 04:08:29.830 INFO [nacos-grpc-client-executor-localhost-11:c.a.n.c.r.client] [c4c78015-7695-4c45-85f5-bb683623eb20] Receive server push request, request = NotifySubscriberRequest, requestId = 184
+2024-06-10 04:08:29.830 INFO [nacos-grpc-client-executor-localhost-11:c.a.n.c.r.client] [c4c78015-7695-4c45-85f5-bb683623eb20] Ack server push request, request = NotifySubscriberRequest, requestId = 184
+2024-06-10 04:08:37.516 INFO [SpringApplicationShutdownHook:c.a.n.c.r.client] Shutdown rpc client, set status to shutdown
+2024-06-10 04:08:37.516 INFO [SpringApplicationShutdownHook:c.a.n.c.r.client] Shutdown client event executor java.util.concurrent.ScheduledThreadPoolExecutor@57debd26[Running, pool size = 2, active threads = 2, queued tasks = 0, completed tasks = 0]
+2024-06-10 04:08:37.516 INFO [SpringApplicationShutdownHook:c.a.n.c.r.client] Close current connection 1717963707839_127.0.0.1_61953
+2024-06-10 04:08:37.517 INFO [nacos-grpc-client-executor-127.0.0.1-5:c.a.n.c.r.c.g.GrpcClient] [1717963707839_127.0.0.1_61953]Ignore complete event,isRunning:false,isAbandon=false
+2024-06-10 04:08:37.520 INFO [SpringApplicationShutdownHook:c.a.n.c.r.c.g.GrpcClient] Shutdown grpc executor java.util.concurrent.ThreadPoolExecutor@617ee08b[Running, pool size = 6, active threads = 0, queued tasks = 0, completed tasks = 6]
+2024-06-10 04:08:37.815 INFO [DubboShutdownHook:c.a.n.c.r.client] Shutdown rpc client, set status to shutdown
+2024-06-10 04:08:37.815 INFO [DubboShutdownHook:c.a.n.c.r.client] Shutdown client event executor java.util.concurrent.ScheduledThreadPoolExecutor@5f4d5ea2[Running, pool size = 2, active threads = 2, queued tasks = 0, completed tasks = 0]
+2024-06-10 04:08:37.815 INFO [DubboShutdownHook:c.a.n.c.r.client] Close current connection 1717963708550_127.0.0.1_61957
+2024-06-10 04:08:37.816 INFO [DubboShutdownHook:c.a.n.c.r.c.g.GrpcClient] Shutdown grpc executor java.util.concurrent.ThreadPoolExecutor@293bf816[Running, pool size = 7, active threads = 0, queued tasks = 0, completed tasks = 7]

@@ -16,18 +16,16 @@ spring:
       default-filters:
         - AddResponseHeader=source, waterbird
       routes:
-        - id: api_route
+        - id: api_backend_route
           uri: lb://wbapi-backend
           predicates:
             - Path=/api/**
-#          filters:
-#            - AddRequestHeader=lcc, sb
-#            - AddRequestParameter=name, sb
-#            - AddResponseHeader=lcc, sb
-#        - id: wbapi-fallback
-#          uri: https://yupi.icu
-#          predicates:
-#            - Path=/fallback
+  redis:
+    database: 1
+    host: localhost
+    port: 6379
+    timeout: 5000
+
 logging:
   level:
     org:
@@ -40,13 +38,12 @@ dubbo:
   application:
     # 设置应用的名称
     name: dubbo-springboot-demo-provider
-    qos-port: 33333
-  # 指定使用 Dubbo 协议，且端口设置为 -1，表示随机分配可用端口
-  protocol:
-    name: dubbo
     qosEnableL: true
     qosPort: 33333
     qosAcceptForeignIp: false
+  # 指定使用 Dubbo 协议，且端口设置为 -1，表示随机分配可用端口
+  protocol:
+    name: dubbo
     port: 22223
   registry:
     # 配置注册中心为 Nacos，使用的地址是 nacos://localhost:8848

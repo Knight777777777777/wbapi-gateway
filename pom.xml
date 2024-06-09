@@ -16,6 +16,50 @@
         <spring-cloud.version>2021.0.5</spring-cloud.version>
     </properties>
     <dependencies>
+        <!--    引入自己配置的api-sdk-starter-->
+        <dependency>
+            <groupId>com.waterbird</groupId>
+            <artifactId>wb-api-sdk</artifactId>
+            <version>0.0.2</version>
+        </dependency>
+        <!--        引入自己配置公共远程调用接口-->
+        <dependency>
+            <groupId>com.waterbird</groupId>
+            <artifactId>wbapi-common</artifactId>
+            <version>0.0.2</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-web</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+            <version>2021.0.5.0</version>
+        </dependency>
+        <!--客户端负载均衡loadbalancer-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-loadbalancer</artifactId>
+        </dependency>
+        <!--        谷歌的Ratelimter限流组件-->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>23.0</version>
+        </dependency>
+
+        <!--基于Redis实现限流-响应式Redis模型-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis-reactive</artifactId>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/org.apache.dubbo/dubbo -->
         <dependency>
             <groupId>org.apache.dubbo</groupId>
@@ -50,22 +94,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.waterbird</groupId>
-            <artifactId>wb-api-sdk</artifactId>
-            <version>0.0.2</version>
-        </dependency>
-        <dependency>
-            <groupId>com.waterbird</groupId>
-            <artifactId>wbapi-common</artifactId>
-            <version>0.0.2</version>
-        </dependency>
-
-        <!--基于Redis实现限流-响应式Redis模型-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-redis-reactive</artifactId>
         </dependency>
     </dependencies>
     <dependencyManagement>
