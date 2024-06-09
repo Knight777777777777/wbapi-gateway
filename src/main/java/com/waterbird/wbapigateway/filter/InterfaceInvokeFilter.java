@@ -1,11 +1,10 @@
-package com.waterbird.wbapigateway;
+package com.waterbird.wbapigateway.filter;
 
 
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.StrUtil;
-import com.waterbird.wbapicommon.model.entity.InterfaceInfo;
-import com.waterbird.wbapicommon.model.entity.User;
-import com.waterbird.wbapicommon.model.entity.UserInterfaceInfo;
+import com.waterbird.wbapicommon.entity.InterfaceInfo;
+import com.waterbird.wbapicommon.entity.User;
 import com.waterbird.wbapicommon.service.InnerInterfaceInfoService;
 import com.waterbird.wbapicommon.service.InnerUserInterfaceInfoService;
 import com.waterbird.wbapicommon.service.InnerUserService;
@@ -13,12 +12,13 @@ import com.waterbird.wbapisdk.utils.SignUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.reactivestreams.Publisher;
+import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
-import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.core.io.buffer.DataBufferUtils;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
@@ -29,20 +29,27 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import javax.annotation.Resource;
 import java.io.UnsupportedEncodingException;
+import java.net.InetSocketAddress;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 全局过滤
  */
 @Slf4j
 @Component
-public class CustomGlobalFilter implements GlobalFilter, Ordered {
+public class InterfaceInvokeFilter implements GatewayFilter, Ordered {
+
+    @DubboReference
+    private ApiBackendService apiBackendService;
+
     @DubboReference
     private InnerUserService innerUserService;
 
@@ -52,38 +59,46 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
     @DubboReference
     private InnerUserInterfaceInfoService innerUserInterfaceInfoService;
 
+    @Resource
+    private StringRedisTemplate stringRedisTemplate;
+
 
     private static final List<String> IP_WHITE_LIST = Arrays.asList("127.0.0.1");
 
 
     private static final long FIVE_MINUTES = 5 * 60 * 1000L;
 
-    private static final String INTERFACE_HOST = "http://localhost:8090";
+    // 接口主机
+    private static final String INTERFACE_HOST = "http://localhost:8123";
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        //1请求日志
+        //1. 请求日志
         ServerHttpRequest request = exchange.getRequest();
+        ServerHttpResponse response = exchange.getResponse();
+
         String path = INTERFACE_HOST + request.getPath().value();
         // 多了空指针检查，明确了 request.getMethod()不能为空，增加了代码的健壮性和可维护性。
         String method = Objects.requireNonNull(request.getMethod()).toString();
+
         log.info("请求id：" + request.getId());
-        log.info("请求路径：" + path);
+        log.info("请求URI："+request.getURI());
+        log.info("请求PATH:"+request.getPath());
         log.info("请求方法：" + method);
         log.info("请求参数：" + request.getQueryParams());
-        String sourceAddress = request.getLocalAddress().getHostString();
-        log.info("请求来源地址：" + sourceAddress);
+        InetSocketAddress sourceAddress = request.getLocalAddress();
+        log.info("本地请求地址:"+request.getLocalAddress());
         String remoteAddress = Objects.requireNonNull(request.getRemoteAddress()).getHostString();
-        log.info("请求地址: {}", remoteAddress);
+        log.info("请求地址：", remoteAddress);
 
         //2访问控制 -黑白名单
-        ServerHttpResponse response = exchange.getResponse();
         if (!IP_WHITE_LIST.contains(sourceAddress)) {
             return handleNoAuth(response);
         }
 
-        //3 用户鉴权（判断 ak、sk 是否合法）
+        //3 用户鉴权（API签名认证判断 ak、sk 是否合法）
         HttpHeaders httpHeaders = request.getHeaders();
+
         String accessKey = httpHeaders.getFirst("accessKey");
         // 防止中文乱码
         String body = null;
@@ -113,12 +128,18 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
         // 从数据库中查出 secretKey
         String secrectKey = invokeUser.getSecretKey();
         String serverSign = SignUtils.genSign(body, secrectKey);
+
         if (sign == null || !StrUtil.equals(sign, serverSign)) {
+            log.error("签名校验失败");
             return handleInvokeError(response);
         }
 
-        // 直接校验如果随机数大于1万，则抛出异常，并提示"无权限"
-        if (Long.parseLong(nonce) > 100000) {
+
+        //3.1防重放，使用redis存储请求的唯一标识，随机时间，并定时淘汰，那使用什么redis结构来实现嗯？
+        //既然是单个数据，这样用string结构实现即可
+        Boolean success = stringRedisTemplate.opsForValue().setIfAbsent(nonce, "1", 5, TimeUnit.MINUTES);
+        if (success ==null){
+            log.error("随机数存储失败!!!!");
             return handleNoAuth(response);
         }
         // 时间戳是否为数字
@@ -130,9 +151,7 @@ public class CustomGlobalFilter implements GlobalFilter, Ordered {
             return handleInvokeError(response);
         }
 
-
-        // 请求的模拟接口是否存在？
-        //  从数据库中查询模拟接口是否存在，以及请求方法是否匹配（以及校验请求参数）这里尽量调用可以操作数据库的项目提供的接口
+        // 远程调用请求的模拟接口是否存在？以及获取调用接口信息
         InterfaceInfo invokeInterfaceInfo = null;
         try {
             invokeInterfaceInfo = innerInterfaceInfoService.getInvokeInterfaceInfo(path, method);

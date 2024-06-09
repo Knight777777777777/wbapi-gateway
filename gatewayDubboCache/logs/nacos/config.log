@@ -93,3 +93,55 @@
 2024-06-09 02:21:56.687 INFO [DubboShutdownHook:c.a.n.c.a.r.i.CredentialWatcher] [null] CredentialWatcher is stopped
 2024-06-09 02:21:56.688 INFO [DubboShutdownHook:c.a.n.c.a.r.i.CredentialService] [null] CredentialService is freed
 2024-06-09 02:21:57.443 INFO [com.alibaba.nacos.client.Worker:c.a.n.c.a.r.i.CredentialWatcher] null No credential found
+2024-06-09 19:21:04.065 INFO [restartedMain:c.a.n.c.u.ParamUtil] [settings] [req-serv] nacos-server port:8848
+2024-06-09 19:21:04.066 INFO [restartedMain:c.a.n.c.u.ParamUtil] [settings] [http-client] connect timeout:1000
+2024-06-09 19:21:04.067 INFO [restartedMain:c.a.n.c.u.ParamUtil] PER_TASK_CONFIG_SIZE: 3000.0
+2024-06-09 19:21:04.092 INFO [restartedMain:c.a.n.c.a.r.i.CredentialWatcher] null No credential found
+2024-06-09 19:21:04.096 INFO [restartedMain:c.a.n.c.c.i.LocalConfigInfoProcessor] LOCAL_SNAPSHOT_PATH:D:\I\wbapi-backend\wbapi-gateway/gatewayDubboCache\nacos\config
+2024-06-09 19:21:05.047 INFO [com.alibaba.nacos.client.remote.worker:c.a.n.c.c.i.ClientWorker] [dfdd3425-767d-4f88-97ab-cee1670f2189_config-0] Connected,notify listen context...
+2024-06-09 19:21:05.077 INFO [restartedMain:c.a.n.c.c.i.Limiter] limitTime:5.0
+2024-06-09 19:21:11.486 INFO [restartedMain:c.a.n.c.c.i.CacheData] nacos.cache.data.init.snapshot = true 
+2024-06-09 19:21:11.486 INFO [restartedMain:c.a.n.c.c.i.ClientWorker] [fixed-localhost_8848] [subscribe] dubbo-springboot-demo-provider.migration+DUBBO_SERVICEDISCOVERY_MIGRATION
+2024-06-09 19:21:11.492 INFO [restartedMain:c.a.n.c.c.i.CacheData] [fixed-localhost_8848] [add-listener] ok, tenant=, dataId=dubbo-springboot-demo-provider.migration, group=DUBBO_SERVICEDISCOVERY_MIGRATION, cnt=1
+2024-06-09 19:21:11.525 INFO [restartedMain:c.a.n.c.c.i.ClientWorker] [fixed-localhost_8848] [subscribe] dubbo-springboot-demo-provider.configurators+dubbo
+2024-06-09 19:21:11.525 INFO [restartedMain:c.a.n.c.c.i.CacheData] [fixed-localhost_8848] [add-listener] ok, tenant=, dataId=dubbo-springboot-demo-provider.configurators, group=dubbo, cnt=1
+2024-06-09 19:21:11.539 INFO [restartedMain:c.a.n.c.c.i.ClientWorker] [fixed-localhost_8848] [subscribe] com.waterbird.wbapicommon.service.InnerUserService::.condition-router+dubbo
+2024-06-09 19:21:11.539 INFO [restartedMain:c.a.n.c.c.i.CacheData] [fixed-localhost_8848] [add-listener] ok, tenant=, dataId=com.waterbird.wbapicommon.service.InnerUserService::.condition-router, group=dubbo, cnt=1
+2024-06-09 19:21:11.543 INFO [restartedMain:c.a.n.c.c.i.ClientWorker] [fixed-localhost_8848] [subscribe] dubbo-springboot-demo-provider.condition-router+dubbo
+2024-06-09 19:21:11.543 INFO [restartedMain:c.a.n.c.c.i.CacheData] [fixed-localhost_8848] [add-listener] ok, tenant=, dataId=dubbo-springboot-demo-provider.condition-router, group=dubbo, cnt=1
+2024-06-09 19:21:11.691 INFO [restartedMain:c.a.n.c.c.i.ClientWorker] [fixed-localhost_8848] [subscribe] dubbo.MESHAPPRULE+dubbo
+2024-06-09 19:21:11.691 INFO [restartedMain:c.a.n.c.c.i.CacheData] [fixed-localhost_8848] [add-listener] ok, tenant=, dataId=dubbo.MESHAPPRULE, group=dubbo, cnt=1
+2024-06-09 19:21:11.692 INFO [restartedMain:c.a.n.c.c.i.ClientWorker] [fixed-localhost_8848] [subscribe] dubbo.tag-router+dubbo
+2024-06-09 19:21:11.692 INFO [restartedMain:c.a.n.c.c.i.CacheData] [fixed-localhost_8848] [add-listener] ok, tenant=, dataId=dubbo.tag-router, group=dubbo, cnt=1
+2024-06-09 19:21:11.697 INFO [restartedMain:c.a.n.c.c.i.ClientWorker] [fixed-localhost_8848] [subscribe] com.waterbird.wbapicommon.service.InnerUserService::.configurators+dubbo
+2024-06-09 19:21:11.697 INFO [restartedMain:c.a.n.c.c.i.CacheData] [fixed-localhost_8848] [add-listener] ok, tenant=, dataId=com.waterbird.wbapicommon.service.InnerUserService::.configurators, group=dubbo, cnt=1
+2024-06-09 19:21:11.908 INFO [Dubbo-framework-mapping-refreshing-scheduler-thread-1:c.a.n.c.c.u.JvmUtil] isMultiInstance:false
+2024-06-09 19:21:11.908 INFO [Dubbo-framework-mapping-refreshing-scheduler-thread-1:c.a.n.c.c.i.ClientWorker] [fixed-localhost_8848] [subscribe] com.waterbird.wbapicommon.service.InnerUserService+mapping
+2024-06-09 19:21:11.908 INFO [Dubbo-framework-mapping-refreshing-scheduler-thread-1:c.a.n.c.c.i.CacheData] [fixed-localhost_8848] [add-listener] ok, tenant=, dataId=com.waterbird.wbapicommon.service.InnerUserService, group=mapping, cnt=1
+2024-06-09 19:21:12.029 INFO [com.alibaba.nacos.client.remote.worker:c.a.n.c.c.i.ClientWorker] [cffa97ad-da75-40fb-a25c-7a2b1c9a0ece_config-0] Connected,notify listen context...
+2024-06-09 19:21:12.083 INFO [restartedMain:c.a.n.c.c.i.ClientWorker] [fixed-localhost_8848] [subscribe] com.waterbird.wbapicommon.service.InnerUserInterfaceInfoService::.condition-router+dubbo
+2024-06-09 19:21:12.083 INFO [restartedMain:c.a.n.c.c.i.CacheData] [fixed-localhost_8848] [add-listener] ok, tenant=, dataId=com.waterbird.wbapicommon.service.InnerUserInterfaceInfoService::.condition-router, group=dubbo, cnt=1
+2024-06-09 19:21:12.102 INFO [restartedMain:c.a.n.c.c.i.ClientWorker] [fixed-localhost_8848] [subscribe] com.waterbird.wbapicommon.service.InnerUserInterfaceInfoService::.configurators+dubbo
+2024-06-09 19:21:12.102 INFO [restartedMain:c.a.n.c.c.i.CacheData] [fixed-localhost_8848] [add-listener] ok, tenant=, dataId=com.waterbird.wbapicommon.service.InnerUserInterfaceInfoService::.configurators, group=dubbo, cnt=1
+2024-06-09 19:21:12.313 INFO [Dubbo-framework-mapping-refreshing-scheduler-thread-2:c.a.n.c.c.i.ClientWorker] [fixed-localhost_8848] [subscribe] com.waterbird.wbapicommon.service.InnerUserInterfaceInfoService+mapping
+2024-06-09 19:21:12.313 INFO [Dubbo-framework-mapping-refreshing-scheduler-thread-2:c.a.n.c.c.i.CacheData] [fixed-localhost_8848] [add-listener] ok, tenant=, dataId=com.waterbird.wbapicommon.service.InnerUserInterfaceInfoService, group=mapping, cnt=1
+2024-06-09 19:21:12.327 INFO [restartedMain:c.a.n.c.c.i.ClientWorker] [fixed-localhost_8848] [subscribe] com.waterbird.wbapicommon.service.InnerInterfaceInfoService::.condition-router+dubbo
+2024-06-09 19:21:12.327 INFO [restartedMain:c.a.n.c.c.i.CacheData] [fixed-localhost_8848] [add-listener] ok, tenant=, dataId=com.waterbird.wbapicommon.service.InnerInterfaceInfoService::.condition-router, group=dubbo, cnt=1
+2024-06-09 19:21:12.347 INFO [restartedMain:c.a.n.c.c.i.ClientWorker] [fixed-localhost_8848] [subscribe] com.waterbird.wbapicommon.service.InnerInterfaceInfoService::.configurators+dubbo
+2024-06-09 19:21:12.347 INFO [restartedMain:c.a.n.c.c.i.CacheData] [fixed-localhost_8848] [add-listener] ok, tenant=, dataId=com.waterbird.wbapicommon.service.InnerInterfaceInfoService::.configurators, group=dubbo, cnt=1
+2024-06-09 19:21:12.552 INFO [Dubbo-framework-mapping-refreshing-scheduler-thread-3:c.a.n.c.c.i.ClientWorker] [fixed-localhost_8848] [subscribe] com.waterbird.wbapicommon.service.InnerInterfaceInfoService+mapping
+2024-06-09 19:21:12.552 INFO [Dubbo-framework-mapping-refreshing-scheduler-thread-3:c.a.n.c.c.i.CacheData] [fixed-localhost_8848] [add-listener] ok, tenant=, dataId=com.waterbird.wbapicommon.service.InnerInterfaceInfoService, group=mapping, cnt=1
+2024-06-09 19:21:12.627 INFO [restartedMain:c.a.n.c.c.i.ClientWorker] [fixed-localhost_8848] [subscribe] org.apache.dubbo.metadata.MetadataService:1.0.0:dubbo-springboot-demo-provider.configurators+dubbo
+2024-06-09 19:21:12.627 INFO [restartedMain:c.a.n.c.c.i.CacheData] [fixed-localhost_8848] [add-listener] ok, tenant=, dataId=org.apache.dubbo.metadata.MetadataService:1.0.0:dubbo-springboot-demo-provider.configurators, group=dubbo, cnt=1
+2024-06-09 19:41:45.439 INFO [Thread-1:c.a.n.c.a.r.i.CredentialWatcher] [null] CredentialWatcher is stopped
+2024-06-09 19:41:45.439 INFO [Thread-1:c.a.n.c.a.r.i.CredentialService] [null] CredentialService is freed
+2024-06-09 19:41:46.108 INFO [com.alibaba.nacos.client.Worker:c.a.n.c.a.r.i.CredentialWatcher] null No credential found
+2024-06-09 19:41:47.514 INFO [Thread-1:c.a.n.c.c.i.ClientWorker] com.alibaba.nacos.client.config.impl.ClientWorker do shutdown begin
+2024-06-09 19:41:47.514 INFO [Thread-1:c.a.n.c.a.r.i.CredentialWatcher] [null] CredentialWatcher is stopped
+2024-06-09 19:41:47.514 INFO [Thread-1:c.a.n.c.a.r.i.CredentialService] [null] CredentialService is freed
+2024-06-09 19:41:47.514 INFO [Thread-1:c.a.n.c.c.i.ClientWorker] Trying to shutdown transport client com.alibaba.nacos.client.config.impl.ClientWorker$ConfigRpcTransportClient@109598ca
+2024-06-09 19:41:47.514 INFO [Thread-1:c.a.n.c.c.i.ClientWorker] Trying to shutdown rpc client dfdd3425-767d-4f88-97ab-cee1670f2189_config-0
+2024-06-09 19:41:47.515 INFO [Thread-1:c.a.n.c.c.i.ClientWorker] Remove rpc client dfdd3425-767d-4f88-97ab-cee1670f2189_config-0
+2024-06-09 19:41:47.515 INFO [Thread-1:c.a.n.c.c.i.ClientWorker] Shutdown executor java.util.concurrent.ScheduledThreadPoolExecutor@6fd2641c[Running, pool size = 16, active threads = 1, queued tasks = 1, completed tasks = 249]
+2024-06-09 19:41:47.515 INFO [Thread-1:c.a.n.c.c.i.ClientWorker] com.alibaba.nacos.client.config.impl.ClientWorker do shutdown stop
+2024-06-09 19:41:48.245 INFO [com.alibaba.nacos.client.naming.security:c.a.n.c.a.r.i.CredentialWatcher] null No credential found

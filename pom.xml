@@ -61,6 +61,12 @@
             <artifactId>wbapi-common</artifactId>
             <version>0.0.2</version>
         </dependency>
+
+        <!--基于Redis实现限流-响应式Redis模型-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis-reactive</artifactId>
+        </dependency>
     </dependencies>
     <dependencyManagement>
         <dependencies>
