@@ -65,14 +65,14 @@ public class LoginGlobalFilter implements GlobalFilter, Ordered {
             return chain.filter(exchange);
         }
 
-        String cookie = headers.getFirst("Cookie");
-        if (StringUtils.isBlank(cookie)){
-            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
-        }
-
-        if (!getLoginUserByCookie(cookie)) {
-            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
-        }
+//        String cookie = headers.getFirst("Cookie");
+//        if (StringUtils.isBlank(cookie)){
+//            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
+//        }
+//
+//        if (!getLoginUserByCookie(cookie)) {
+//            throw new BusinessException(ErrorCode.NOT_LOGIN_ERROR);
+//        }
 
         return chain.filter(exchange);
     }

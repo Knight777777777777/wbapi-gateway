@@ -1,5 +1,6 @@
 #Dubbo cache
-#Sun Jun 09 19:31:11 CST 2024
+#Tue Jun 11 16:54:10 CST 2024
 com.waterbird.wbapicommon.service.InnerInterfaceInfoService=["dubbo","dubbo-springboot-demo-provider"]
 com.waterbird.wbapicommon.service.InnerUserInterfaceInfoService=["dubbo","dubbo-springboot-demo-provider"]
+com.waterbird.wbapicommon.service.ApiBackendService=["dubbo"]
 com.waterbird.wbapicommon.service.InnerUserService=["dubbo","dubbo-springboot-demo-provider"]

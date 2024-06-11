@@ -3,10 +3,10 @@ package com.waterbird.wbapigateway.filter;
 
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.StrUtil;
-import com.waterbird.wbapicommon.entity.InterfaceInfo;
-import com.waterbird.wbapicommon.entity.User;
+import com.waterbird.wbapicommon.model.entity.InterfaceInfo;
+import com.waterbird.wbapicommon.model.entity.User;
 import com.waterbird.wbapicommon.service.ApiBackendService;
-import com.waterbird.wbapicommon.vo.UserInterfaceInfoMessage;
+import com.waterbird.wbapicommon.model.vo.UserInterfaceInfoMessage;
 import com.waterbird.wbapisdk.utils.SignUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboReference;
@@ -228,13 +228,10 @@ public class InterfaceInvokeFilter implements GatewayFilter, Ordered {
                                 byte[] content = new byte[dataBuffer.readableByteCount()];
                                 dataBuffer.read(content);
                                 DataBufferUtils.release(dataBuffer);//释放掉内存
-
-
                                 // 构建日志
                                 log.info("接口调用响应状态码：" + originalResponse.getStatusCode());
                                 //responseBody
                                 String responseBody = new String(content, StandardCharsets.UTF_8);
-
                                 //8.接口调用失败，利用消息队列实现接口统计数据的回滚；因为消息队列的可靠性所以我们选择消息队列而不是远程调用来实现
                                 if (!(originalResponse.getStatusCode() == HttpStatus.OK)) {
                                     log.error("接口异常调用-响应体:" + responseBody);

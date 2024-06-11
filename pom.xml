@@ -26,7 +26,7 @@
         <dependency>
             <groupId>com.waterbird</groupId>
             <artifactId>wbapi-common</artifactId>
-            <version>0.0.2</version>
+            <version>0.0.3</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.springframework.boot</groupId>
@@ -43,7 +43,7 @@
             <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
             <version>2021.0.5.0</version>
         </dependency>
-        <!--客户端负载均衡loadbalancer-->
+        <!--客户端负载均衡loadbalancer 根据服务名进行路由转发-->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-loadbalancer</artifactId>

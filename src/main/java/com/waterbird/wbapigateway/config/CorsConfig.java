@@ -21,8 +21,6 @@ public class CorsConfig{
         corsConfiguration.addAllowedMethod("*");
         corsConfiguration.addAllowedOriginPattern("*");
         corsConfiguration.setAllowCredentials(true);
-
-
         source.registerCorsConfiguration("/**",corsConfiguration);
         return new CorsWebFilter(source);
     }

@@ -16,6 +16,18 @@ spring:
       default-filters:
         - AddResponseHeader=source, waterbird
       routes:
+        - id: api_interface_route
+          uri: lb://wbapi-interface
+          predicates:
+            - Path=/api/interface/**
+        - id: api_order_route
+          uri: lb://api-order
+          predicates:
+            - Path=/api/order/**
+        - id: api_third_route
+          uri: lb://api-third-party
+          predicates:
+            - Path=/api/third/**
         - id: api_backend_route
           uri: lb://wbapi-backend
           predicates:
